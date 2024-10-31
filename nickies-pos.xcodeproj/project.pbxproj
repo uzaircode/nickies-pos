@@ -6,6 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		35A848E22CCE244900731BCA /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 35A848E12CCE244900731BCA /* Auth */; };
+		35A848E42CCE244900731BCA /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 35A848E32CCE244900731BCA /* Functions */; };
+		35A848E62CCE244900731BCA /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 35A848E52CCE244900731BCA /* PostgREST */; };
+		35A848E82CCE244900731BCA /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = 35A848E72CCE244900731BCA /* Realtime */; };
+		35A848EA2CCE244900731BCA /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 35A848E92CCE244900731BCA /* Storage */; };
+		35A848EC2CCE244900731BCA /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 35A848EB2CCE244900731BCA /* Supabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		35A848B92CCE12DD00731BCA /* nickies-pos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "nickies-pos.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +32,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35A848E62CCE244900731BCA /* PostgREST in Frameworks */,
+				35A848E42CCE244900731BCA /* Functions in Frameworks */,
+				35A848EC2CCE244900731BCA /* Supabase in Frameworks */,
+				35A848E22CCE244900731BCA /* Auth in Frameworks */,
+				35A848EA2CCE244900731BCA /* Storage in Frameworks */,
+				35A848E82CCE244900731BCA /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +80,12 @@
 			);
 			name = "nickies-pos";
 			packageProductDependencies = (
+				35A848E12CCE244900731BCA /* Auth */,
+				35A848E32CCE244900731BCA /* Functions */,
+				35A848E52CCE244900731BCA /* PostgREST */,
+				35A848E72CCE244900731BCA /* Realtime */,
+				35A848E92CCE244900731BCA /* Storage */,
+				35A848EB2CCE244900731BCA /* Supabase */,
 			);
 			productName = "nickies-pos";
 			productReference = 35A848B92CCE12DD00731BCA /* nickies-pos.app */;
@@ -94,6 +115,9 @@
 			);
 			mainGroup = 35A848B02CCE12DD00731BCA;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				35A848E02CCE244900731BCA /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 35A848BA2CCE12DD00731BCA /* Products */;
 			projectDirPath = "";
@@ -324,6 +348,50 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		35A848E02CCE244900731BCA /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		35A848E12CCE244900731BCA /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35A848E02CCE244900731BCA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		35A848E32CCE244900731BCA /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35A848E02CCE244900731BCA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		35A848E52CCE244900731BCA /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35A848E02CCE244900731BCA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		35A848E72CCE244900731BCA /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35A848E02CCE244900731BCA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		35A848E92CCE244900731BCA /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35A848E02CCE244900731BCA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		35A848EB2CCE244900731BCA /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35A848E02CCE244900731BCA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 35A848B12CCE12DD00731BCA /* Project object */;
 }
