@@ -19,6 +19,9 @@ struct MainTabView: View {
           Label("Inventory", systemImage: "shippingbox")
         }
     }
+    .onAppear() {
+      UITabBar.appearance().backgroundColor = .systemGray6
+    }
   }
 }
 

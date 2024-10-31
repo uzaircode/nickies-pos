@@ -11,15 +11,24 @@ import Supabase
 struct MenuScreen: View {
   
   @Environment(\.supabaseClient) private var supabaseClient
-  @State private var selectedProductId: [UUID?] = []
   @State private var products: [Product] = []
-  @State private var orders: [Order] = []
-  @State var showSheetView = false
+  @State private var cartItems: [CartItem] = []
+  @State private var showSheetView = false
+  private var totalPrice: Double {
+    cartItems.reduce(0) { $0 + $1.product.price * Double($1.count)}
+  }
+  private var totalItemCount: Int {
+    cartItems.reduce(0) { $0 + $1.count }
+  }
+  private let fixedColumn = [
+    GridItem(.flexible()),
+    GridItem(.flexible())
+  ]
   
   private func fetchProducts() async {
     do {
       products = try await supabaseClient
-        .from("products")
+        .from(Constant.productTable)
         .select()
         .execute()
         .value
@@ -28,28 +37,17 @@ struct MenuScreen: View {
     }
   }
   
-  private func insertOrder() async {
-    do {
-      guard let selectedProductId = selectedProductId.first,
-            let product = products.first(where: { $0.id == selectedProductId }) else {
-        print("Product not found")
-        return
-      }
-      try await supabaseClient.from("orders").insert([
-        "product_id": product.id.uuidString
-      ]).execute()
-      
-      let order = Order(id: UUID().hashValue, productId: product.id)
-      orders.append(order)
-    } catch {
-      print("Error inserting order:", error)
+  private func addToCart(product: Product) async {
+    if let index = cartItems.firstIndex(where: { $0.product.id == product.id }) {
+      cartItems[index].count += 1
+      print("Updated existing item: \(cartItems[index])")
+    } else {
+      let newItem = CartItem(product: product, count: 1)
+      cartItems.append(newItem)
+      print("Added new item: \(newItem)")
     }
+    print("Current Cart Items: \(cartItems)")
   }
-  
-  private let fixedColumn = [
-    GridItem(.flexible()),
-    GridItem(.flexible())
-  ]
   
   var body: some View {
     NavigationView {
@@ -57,7 +55,7 @@ struct MenuScreen: View {
         LazyVGrid(columns: fixedColumn) {
           ForEach(products, id: \.id) { product in
             VStack {
-              Text(String(product.name))
+              Text(product.name)
                 .foregroundColor(.white)
                 .font(.title)
                 .padding(.bottom, 4)
@@ -67,32 +65,27 @@ struct MenuScreen: View {
             }
             .frame(alignment: .center)
             .padding()
-            .background(selectedProductId.contains(product.id) ? Color.blue : Color.gray)
+            .background(Color.blue)
             .cornerRadius(10)
             .frame(height: 140)
             .onTapGesture {
-              if let index = selectedProductId.firstIndex(where: { $0 == product.id }) {
-                selectedProductId.remove(at: index)
-              } else {
-                selectedProductId.append(product.id)
+              Task {
+                await addToCart(product: product)
               }
             }
           }
         }
         .padding(.bottom)
-        Button {
+        
+        Button(action: {
           showSheetView.toggle()
-          Task {
-            await insertOrder()
-          }
-        } label: {
-          Text("Place Order")
+        }) {
+          Text(cartItems.isEmpty ? "Add to Cart" : "\(totalItemCount) items - RM \(totalPrice, specifier: "%.2f")")
             .fontWeight(.medium)
-            .foregroundStyle(.black)
+            .foregroundColor(.black)
             .frame(maxWidth: .infinity)
             .frame(height: 50)
             .background(Color.white)
-            .foregroundStyle(Color.white)
             .cornerRadius(30)
         }
       }
@@ -105,7 +98,7 @@ struct MenuScreen: View {
       }
     }
     .sheet(isPresented: $showSheetView) {
-      CartItemScreen()
+      CartItemScreen(cartItems: $cartItems)
     }
   }
 }
