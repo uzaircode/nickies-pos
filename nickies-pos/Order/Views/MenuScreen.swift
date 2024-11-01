@@ -51,32 +51,34 @@ struct MenuScreen: View {
   
   var body: some View {
     NavigationView {
-      ScrollView {
-        LazyVGrid(columns: fixedColumn) {
-          ForEach(products, id: \.id) { product in
-            VStack {
-              Text(product.name)
-                .foregroundColor(.white)
-                .font(.title)
-                .padding(.bottom, 4)
-              Text("$\(product.price, specifier: "%.2f")")
-                .font(.subheadline)
-                .foregroundColor(.white)
-            }
-            .frame(alignment: .center)
-            .padding()
-            .background(Color.blue)
-            .cornerRadius(10)
-            .frame(height: 140)
-            .onTapGesture {
-              Task {
-                await addToCart(product: product)
+      VStack {
+        ScrollView {
+          LazyVGrid(columns: fixedColumn) {
+            ForEach(products, id: \.id) { product in
+              VStack {
+                Text(product.name)
+                  .foregroundColor(.white)
+                  .font(.title)
+                  .padding(.bottom, 4)
+                Text("$\(product.price, specifier: "%.2f")")
+                  .font(.subheadline)
+                  .foregroundColor(.white)
+              }
+              .frame(alignment: .center)
+              .padding()
+              .background(Color.blue)
+              .cornerRadius(10)
+              .frame(height: 140)
+              .onTapGesture {
+                Task {
+                  await addToCart(product: product)
+                }
               }
             }
           }
+          .padding(.bottom)
         }
-        .padding(.bottom)
-        
+        Spacer()
         Button(action: {
           showSheetView.toggle()
         }) {
@@ -89,7 +91,7 @@ struct MenuScreen: View {
             .cornerRadius(30)
         }
       }
-      .padding(.horizontal)
+      .padding(.vertical)
       .navigationTitle("Nickies POS")
       .onAppear {
         Task {
