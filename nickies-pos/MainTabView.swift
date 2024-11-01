@@ -14,6 +14,10 @@ struct MainTabView: View {
         .tabItem {
           Label("Menu", systemImage: "square.grid.2x2")
         }
+      AnalyticsScreen()
+        .tabItem {
+          Label("Analytics", systemImage: "chart.bar.fill")
+        }
       InventoryScreen()
         .tabItem {
           Label("Inventory", systemImage: "shippingbox")
