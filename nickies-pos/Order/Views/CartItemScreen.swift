@@ -12,6 +12,7 @@ struct CartItemScreen: View {
   @Environment(\.supabaseClient) private var supabaseClient
   @Environment(\.dismiss) private var dismiss
   @Binding var cartItems: [CartItem]
+  @State private var selection: String = "Cash"
   
   private func removeAllCartItem(_ cartItem: [CartItem]) {
     cartItems.removeAll()
@@ -66,6 +67,12 @@ struct CartItemScreen: View {
             }
           }
         }
+        Picker("Select", selection: $selection) {
+          Text("Cash").tag("Cash")
+          Text("QR Payment").tag("QR Payment")
+        }
+        .pickerStyle(SegmentedPickerStyle())
+        .padding()
         Divider()
         HStack {
           Text("Total Price")
