@@ -18,18 +18,18 @@ struct AnalyticsCard: View {
         Image(systemName: icon)
           .resizable()
           .frame(width: 30, height: 30)
-          .foregroundStyle(.black)
+          .foregroundStyle(.white)
           .padding(.bottom, 10)
         Text(text)
-          .foregroundStyle(Color.gray)
+          .foregroundStyle(Color(uiColor: .systemGray))
         Text(number)
           .font(.largeTitle)
-          .foregroundStyle(.black)
+          .foregroundStyle(.white)
       }
       .padding()
     }
     .frame(maxWidth: .infinity, alignment: .leading)
-    .background(Color.white)
+    .background(Color(uiColor: .systemGray5))
     .cornerRadius(20)
   }
 }
