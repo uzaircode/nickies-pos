@@ -10,6 +10,7 @@ import Supabase
 
 struct InventoryScreen: View {
   
+  @State private var search = ""
   @Environment(\.supabaseClient) private var supabaseClient
   @State private var isPresented: Bool = false
   @State private var items: [InventoryItem] = []
@@ -26,14 +27,25 @@ struct InventoryScreen: View {
     }
   }
   
+  var searchResult: [InventoryItem] {
+    if search.isEmpty {
+      return items
+    } else {
+      return items.filter { $0.name.lowercased().hasPrefix(search.lowercased().trimmed()) }
+    }
+  }
+  
   var body: some View {
     NavigationStack {
-      List(items) { item in
-        ItemCellView(item: item)
+      List(searchResult) { item in
+        HStack {
+          Text(item.name)
+          Spacer()
+          Text("\(item.quantity)")
+        }
       }.task {
         await fetchItems()
       }
-      .navigationTitle("Inventory")
       .toolbar {
         ToolbarItem(placement: .topBarTrailing) {
           Button("Add") {
@@ -41,6 +53,10 @@ struct InventoryScreen: View {
           }
         }
       }
+      .searchable(text: $search)
+      .autocorrectionDisabled(true)
+      .textInputAutocapitalization(.never)
+      .navigationTitle("Inventory")
     }
     .sheet(isPresented: $isPresented) {
       AddInventoryScreen(items: $items)
@@ -52,16 +68,4 @@ struct InventoryScreen: View {
   NavigationStack {
     InventoryScreen()
   }.environment(\.supabaseClient, .development)
-}
-
-struct ItemCellView: View {
-  let item: InventoryItem
-  
-  var body: some View {
-    HStack {
-      Text(item.name)
-      Spacer()
-      Text("\(item.quantity)")
-    }
-  }
 }
