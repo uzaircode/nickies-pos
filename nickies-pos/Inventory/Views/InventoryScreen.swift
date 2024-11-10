@@ -27,6 +27,26 @@ struct InventoryScreen: View {
     }
   }
   
+  //please check with Mohammad Azam
+  private func deleteItem(at offsets: IndexSet) {
+    for index in offsets {
+      let itemToDelete = items[index]
+      Task {
+        do {
+          try await supabaseClient
+            .from(Constant.itemTable)
+            .delete()
+            .eq("id", value: itemToDelete.id)
+            .execute()
+          // Remove the item from the local list
+          items.remove(at: index)
+        } catch {
+          print(error)
+        }
+      }
+    }
+  }
+  
   var searchResult: [InventoryItem] {
     if search.isEmpty {
       return items
@@ -37,12 +57,15 @@ struct InventoryScreen: View {
   
   var body: some View {
     NavigationStack {
-      List(searchResult) { item in
-        HStack {
-          Text(item.name)
-          Spacer()
-          Text("\(item.quantity)")
+      List{
+        ForEach(searchResult) { item in
+          HStack {
+            Text(item.name)
+            Spacer()
+            Text("\(item.quantity)")
+          }
         }
+        .onDelete(perform: deleteItem)
       }.task {
         await fetchItems()
       }

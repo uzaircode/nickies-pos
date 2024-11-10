@@ -8,7 +8,7 @@
 import Foundation
 
 struct CartItem: Identifiable {
-  var id: UUID?
+  var id: Int?
   var product: Product
   var count: Int
   

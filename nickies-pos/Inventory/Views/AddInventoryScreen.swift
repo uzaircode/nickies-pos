@@ -10,13 +10,16 @@ import SwiftUI
 struct AddInventoryScreen: View {
   @Environment(\.supabaseClient) private var supabaseClient
   @Environment(\.dismiss) private var dismiss
-  
   @State private var name: String = ""
-  @State private var quantity: Int = 0
-  
+  @State private var quantity: Int? = nil
   @Binding var items: [InventoryItem]
   
+  var isFormValid: Bool {
+    return !name.isEmpty && quantity != nil && quantity! > 0
+  }
+  
   private func saveItem() async {
+    guard let quantity = quantity else { return }
     let item = InventoryItem(name: name, quantity: quantity)
     do {
       let newItem: InventoryItem = try await supabaseClient
@@ -26,9 +29,7 @@ struct AddInventoryScreen: View {
         .single()
         .execute()
         .value
-      
       items.append(newItem)
-      
       dismiss()
     } catch {
       print(error)
@@ -40,10 +41,9 @@ struct AddInventoryScreen: View {
       Form {
         TextField("Enter item name", text: $name )
           .autocorrectionDisabled(true)
-          .textFieldStyle(.roundedBorder)
+          .textInputAutocapitalization(.never)
         TextField("Enter the quantity", value: $quantity, format: .number)
           .autocorrectionDisabled(true)
-          .textFieldStyle(.roundedBorder)
       }
       .toolbar {
         ToolbarItem(placement: .topBarLeading) {
@@ -56,7 +56,7 @@ struct AddInventoryScreen: View {
             Task {
               await saveItem()
             }
-          }
+          }.disabled(!isFormValid)
         }
       }
     }

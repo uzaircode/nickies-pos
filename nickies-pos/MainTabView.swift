@@ -26,6 +26,7 @@ struct MainTabView: View {
     .onAppear() {
       UITabBar.appearance().backgroundColor = .systemGray6
     }
+    .background(Color.black)
   }
 }
 

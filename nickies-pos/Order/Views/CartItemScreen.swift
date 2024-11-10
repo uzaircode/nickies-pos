@@ -14,13 +14,6 @@ struct CartItemScreen: View {
   @Binding var cartItems: [CartItem]
   @State private var selection: String = "Cash"
   
-  private func removeAllCartItem(_ cartItem: [CartItem]) {
-    cartItems.removeAll()
-  }
-  private func removeCartItem(_ cartItem: CartItem) {
-    cartItems.removeAll { $0.id == cartItem.id}
-  }
-  
   private var totalPrice: Double {
     cartItems.reduce(0) { $0 + $1.product.price * Double($1.count) }
   }
@@ -29,13 +22,35 @@ struct CartItemScreen: View {
     return cartItem.product.price * Double(cartItem.count)
   }
   
+  private func addOrder() async throws {
+    let newOrder: Order = try await supabaseClient
+      .from("orders")
+      .insert(["status": "Pending"])
+      .select()
+      .single()
+      .execute()
+      .value
+    print("Cart Items: \(cartItems)")
+    
+    for cartItem in cartItems {
+      print("Inserting Order Item for Product: \(cartItem.product.name), Quantity: \(cartItem.count)")
+      try await supabaseClient
+        .from("order_items")
+        .insert(["product_id": cartItem.product.id,
+                 "order_id": newOrder.id,
+                 "amount": cartItem.count
+                ])
+        .execute()
+    }
+  }
+  
   var body: some View {
     NavigationView {
       VStack(alignment: .leading, spacing: 0) {
         HStack {
           Spacer()
           Button(action: {
-            removeAllCartItem(cartItems)
+            cartItems.removeAll()
           }) {
             Image(systemName: "trash")
               .resizable()
@@ -55,13 +70,13 @@ struct CartItemScreen: View {
             Text("x\(cartItem.count)")
               .foregroundColor(.gray)
             Spacer()
-            Text("RM\(totalPricePerItem(cartItem), specifier: "%.2f")")
+            Text("RM\(cartItem.product.price * Double(cartItem.count), specifier: "%.2f")")
               .font(.title3)
           }
           .padding(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
           .swipeActions {
             Button(role: .destructive) {
-              removeCartItem(cartItem)
+              cartItems.removeAll { $0.id == cartItem.id }
             } label: {
               Label("Delete", systemImage: "trash")
             }
@@ -83,6 +98,11 @@ struct CartItemScreen: View {
         }
         .padding()
         Button(action: {
+          Task {
+            try await addOrder()
+            cartItems.removeAll()
+            dismiss()
+          }
         }) {
           Text("Place Order")
             .fontWeight(.medium)
@@ -112,11 +132,9 @@ struct CartItemScreen: View {
 }
 
 #Preview {
-    // Create a sample product and cart item
-    let sampleProduct = Product(id: UUID(), name: "Sample Product", price: 15.99)
-    let sampleCartItem = CartItem(product: sampleProduct, count: 2)
-    
-    // Pass the sample cart item to the preview
-    CartItemScreen(cartItems: .constant([sampleCartItem]))
-        .environment(\.supabaseClient, .development)
+  let sampleProduct = Product(id: 1, name: "Sample Product", price: 15.99)
+  let sampleCartItem = CartItem(product: sampleProduct, count: 2)
+  
+  CartItemScreen(cartItems: .constant([sampleCartItem]))
+    .environment(\.supabaseClient, .development)
 }
