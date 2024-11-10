@@ -8,11 +8,17 @@
 import SwiftUI
 import Supabase
 
+enum PaymentType {
+  case Cash
+  case QrPayment
+}
+
 struct CartItemScreen: View {
   @Environment(\.supabaseClient) private var supabaseClient
   @Environment(\.dismiss) private var dismiss
   @Binding var cartItems: [CartItem]
   @State private var selection: String = "Cash"
+  @State private var showMoreSheet: Bool = false
   
   private var totalPrice: Double {
     cartItems.reduce(0) { $0 + $1.product.price * Double($1.count) }
@@ -48,6 +54,18 @@ struct CartItemScreen: View {
     NavigationView {
       VStack(alignment: .leading, spacing: 0) {
         HStack {
+          
+          Button(action: {
+            showMoreSheet.toggle()
+          }) {
+            Image(systemName: "ellipsis.circle")
+              .resizable()
+              .scaledToFit()
+              .frame(width: 25, height: 25)
+              .foregroundColor(.blue)
+          }
+          .buttonStyle(PlainButtonStyle())
+          .padding(.top)
           Spacer()
           Button(action: {
             cartItems.removeAll()
@@ -126,6 +144,9 @@ struct CartItemScreen: View {
               .foregroundColor(.blue)
           }
         }
+      }
+      .sheet(isPresented: $showMoreSheet) {
+        CartMoreScreen()
       }
     }
   }
