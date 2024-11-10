@@ -19,6 +19,7 @@ struct CartItemScreen: View {
   @Binding var cartItems: [CartItem]
   @State private var selection: String = "Cash"
   @State private var showMoreSheet: Bool = false
+  @State private var preselectedIndex: Int = 0
   
   private var totalPrice: Double {
     cartItems.reduce(0) { $0 + $1.product.price * Double($1.count) }
@@ -100,12 +101,14 @@ struct CartItemScreen: View {
             }
           }
         }
-        Picker("Select", selection: $selection) {
-          Text("Cash").tag("Cash")
-          Text("QR Payment").tag("QR Payment")
-        }
-        .pickerStyle(SegmentedPickerStyle())
-        .padding()
+        //        Picker("Select", selection: $selection) {
+        //          Text("Cash").tag("Cash")
+        //          Text("QR Payment").tag("QR Payment")
+        //        }
+        //        .pickerStyle(SegmentedPickerStyle())
+        //        .padding()
+        CustomSegmentedControl(preselectedIndex: $preselectedIndex, options: ["Cash", "QR Payment"])
+          .padding()
         Divider()
         HStack {
           Text("Total Price")
@@ -158,4 +161,38 @@ struct CartItemScreen: View {
   
   CartItemScreen(cartItems: .constant([sampleCartItem]))
     .environment(\.supabaseClient, .development)
+}
+
+struct CustomSegmentedControl: View {
+  @Binding var preselectedIndex: Int
+  var options: [String]
+  
+  var body: some View {
+    HStack(spacing: 0) {
+      ForEach(options.indices, id:\.self) { index in
+        ZStack {
+          Rectangle()
+            .fill(.white.opacity(0.2))
+          
+          Rectangle()
+            .fill(.white)
+            .cornerRadius(20)
+            .padding(2)
+            .opacity(preselectedIndex == index ? 1 : 0.01)
+            .onTapGesture {
+              withAnimation(.interactiveSpring()) {
+                preselectedIndex = index
+              }
+            }
+        }
+        .overlay(
+          Text(options[index])
+            .foregroundColor(preselectedIndex == index ? .black : .gray)
+            .fontWeight(.medium)
+        )
+      }
+    }
+    .frame(height: 50)
+    .cornerRadius(20)
+  }
 }
