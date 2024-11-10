@@ -8,7 +8,7 @@
 import SwiftUI
 import Supabase
 
-enum PaymentType {
+enum PaymentType:String, Hashable {
   case Cash
   case QrPayment
 }
@@ -17,7 +17,7 @@ struct CartItemScreen: View {
   @Environment(\.supabaseClient) private var supabaseClient
   @Environment(\.dismiss) private var dismiss
   @Binding var cartItems: [CartItem]
-  @State private var selection: String = "Cash"
+  @State private var selection: PaymentType = .Cash
   @State private var showMoreSheet: Bool = false
   
   private var totalPrice: Double {
@@ -101,8 +101,8 @@ struct CartItemScreen: View {
           }
         }
         Picker("Select", selection: $selection) {
-          Text("Cash").tag("Cash")
-          Text("QR Payment").tag("QR Payment")
+          Text("Cash").tag(PaymentType.Cash)
+          Text("QR Payment").tag(PaymentType.QrPayment)
         }
         .pickerStyle(SegmentedPickerStyle())
         .padding()
@@ -115,11 +115,12 @@ struct CartItemScreen: View {
             .font(.headline)
         }
         .padding()
-        Button(action: {
-          Task {
-            try await addOrder()
-            cartItems.removeAll()
-            dismiss()
+        NavigationLink(destination: {
+          if selection == .Cash {
+            CashScreen()
+          } else if selection == .QrPayment {
+            QrPaymentScreen()
+              .navigationBarBackButtonHidden(true)
           }
         }) {
           Text("Place Order")
@@ -131,23 +132,11 @@ struct CartItemScreen: View {
             .cornerRadius(30)
             .padding()
         }
-        .disabled(cartItems.isEmpty)
+        .disabled(cartItems.isEmpty) // Disable the link if cartItems is empty
       }
-      .navigationTitle("Cart")
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .topBarTrailing) {
-          Button(action: {
-            dismiss()
-          }) {
-            Text("Dismiss")
-              .foregroundColor(.blue)
-          }
-        }
-      }
-      .sheet(isPresented: $showMoreSheet) {
-        CartMoreScreen()
-      }
+    }
+    .sheet(isPresented: $showMoreSheet) {
+      CartMoreScreen()
     }
   }
 }

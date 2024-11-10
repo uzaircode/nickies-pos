@@ -50,7 +50,7 @@ struct MenuScreen: View {
   }
   
   var body: some View {
-    NavigationView {
+    NavigationStack {
       VStack {
         ScrollView {
           LazyVGrid(columns: fixedColumn) {
