@@ -83,13 +83,8 @@ struct MenuScreen: View {
           showSheetView.toggle()
         }) {
           Text(cartItems.isEmpty ? "Add to Cart" : "\(totalItemCount) items - RM \(totalPrice, specifier: "%.2f")")
-            .fontWeight(.medium)
-            .foregroundColor(.black)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(Color.white)
-            .cornerRadius(30)
         }
+        .applyButtonStyle(isDisabled: false)
       }
       .padding(.vertical)
       .navigationTitle("Nickies POS")

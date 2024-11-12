@@ -126,15 +126,8 @@ struct CartItemScreen: View {
           }
         }) {
           Text("Place Order")
-            .fontWeight(.medium)
-            .foregroundColor(.black)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(cartItems.isEmpty ? Color.gray : Color.white)
-            .cornerRadius(30)
-            .padding()
         }
-        .disabled(cartItems.isEmpty)
+        .applyButtonStyle(isDisabled: cartItems.isEmpty)
       }
       .navigationTitle("Cart")
       .navigationBarTitleDisplayMode(.inline)
@@ -161,38 +154,4 @@ struct CartItemScreen: View {
   
   CartItemScreen(cartItems: .constant([sampleCartItem]))
     .environment(\.supabaseClient, .development)
-}
-
-struct CustomSegmentedControl: View {
-  @Binding var preselectedIndex: Int
-  var options: [String]
-  
-  var body: some View {
-    HStack(spacing: 0) {
-      ForEach(options.indices, id:\.self) { index in
-        ZStack {
-          Rectangle()
-            .fill(.white.opacity(0.2))
-          
-          Rectangle()
-            .fill(.white)
-            .cornerRadius(20)
-            .padding(2)
-            .opacity(preselectedIndex == index ? 1 : 0.01)
-            .onTapGesture {
-              withAnimation(.interactiveSpring()) {
-                preselectedIndex = index
-              }
-            }
-        }
-        .overlay(
-          Text(options[index])
-            .foregroundColor(preselectedIndex == index ? .black : .gray)
-            .fontWeight(.medium)
-        )
-      }
-    }
-    .frame(height: 50)
-    .cornerRadius(20)
-  }
 }
