@@ -12,6 +12,8 @@ struct nickies_posApp: App {
     var body: some Scene {
         WindowGroup {
           MainTabView()
+            .environment(CustomerStore(supabaseClient: .development))
+            .environment(OrderStore(supabaseClient: .development))
         }
     }
 }

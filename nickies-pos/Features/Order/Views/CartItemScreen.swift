@@ -20,6 +20,7 @@ struct CartItemScreen: View {
   @State private var selection: String = "Cash"
   @State private var showMoreSheet: Bool = false
   @State private var preselectedIndex: Int = 0
+  @State private var isShowingSheet: Bool = false
   
   private var totalPrice: Double {
     cartItems.reduce(0) { $0 + $1.product.price * Double($1.count) }
@@ -101,12 +102,6 @@ struct CartItemScreen: View {
             }
           }
         }
-        //        Picker("Select", selection: $selection) {
-        //          Text("Cash").tag("Cash")
-        //          Text("QR Payment").tag("QR Payment")
-        //        }
-        //        .pickerStyle(SegmentedPickerStyle())
-        //        .padding()
         CustomSegmentedControl(preselectedIndex: $preselectedIndex, options: ["Cash", "QR Payment"])
           .padding()
         Divider()
@@ -119,11 +114,12 @@ struct CartItemScreen: View {
         }
         .padding()
         Button(action: {
-          Task {
-            try await addOrder()
-            cartItems.removeAll()
-            dismiss()
-          }
+//          Task {
+//            try await addOrder()
+//            cartItems.removeAll()
+//            dismiss()
+//          }
+          isShowingSheet.toggle()
         }) {
           Text("Place Order")
         }
@@ -144,7 +140,7 @@ struct CartItemScreen: View {
       .sheet(isPresented: $showMoreSheet) {
         CartMoreScreen()
       }
-    }
+    }.sheet(isPresented: $isShowingSheet) { CashScreen() }
   }
 }
 

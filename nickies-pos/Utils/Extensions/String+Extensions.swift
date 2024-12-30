@@ -7,8 +7,6 @@
 
 import Foundation
 
-//https://www.youtube.com/watch?v=n5X_V81OYnQ&ab_channel=PaulHudson
-//extension
 extension String {
   func trimmed() -> String {
     self.trimmingCharacters(in: .whitespacesAndNewlines)

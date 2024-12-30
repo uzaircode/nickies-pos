@@ -8,6 +8,6 @@
 import Foundation
 
 struct Order: Codable, Identifiable {
-  var id: Int?
+  var id: Int
   let status: String
 }

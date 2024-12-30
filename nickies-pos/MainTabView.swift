@@ -14,19 +14,22 @@ struct MainTabView: View {
         .tabItem {
           Label("Menu", systemImage: "square.grid.2x2")
         }
-      AnalyticsScreen()
+      OrderScreen()
         .tabItem {
-          Label("Analytics", systemImage: "chart.bar.fill")
+          Label("Order", systemImage: "cube.box")
         }
-      InventoryScreen()
+      CustomerScreen()
         .tabItem {
-          Label("Inventory", systemImage: "shippingbox")
+          Label("Customer", systemImage: "person")
+        }
+      SettingScreen()
+        .tabItem {
+          Label("Setting", systemImage: "gearshape")
         }
     }
     .onAppear() {
       UITabBar.appearance().backgroundColor = .systemGray6
     }
-    .background(Color.black)
   }
 }
 
