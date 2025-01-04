@@ -11,4 +11,5 @@ struct Constant {
   static let orderTable = "orders"
   static let productTable = "products"
   static let itemTable = "items"
+  static let orderItemsTable = "order_items"
 }

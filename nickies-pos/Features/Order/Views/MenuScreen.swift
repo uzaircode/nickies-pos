@@ -10,51 +10,35 @@ import Supabase
 
 struct MenuScreen: View {
   
-  @Environment(\.supabaseClient) private var supabaseClient
-  @State private var products: [Product] = []
-  @State private var cartItems: [CartItem] = []
+  @Environment(CartStore.self) private var store
   @State private var showSheetView = false
-  private var totalPrice: Double {
-    cartItems.reduce(0) { $0 + $1.product.price * Double($1.count)}
-  }
+  
   private var totalItemCount: Int {
-    cartItems.reduce(0) { $0 + $1.count }
+    store.cartItems.reduce(0) { $0 + $1.count }
   }
   private let fixedColumn = [
     GridItem(.flexible()),
     GridItem(.flexible())
   ]
   
-  private func fetchProducts() async {
-    do {
-      products = try await supabaseClient
-        .from(Constant.productTable)
-        .select()
-        .execute()
-        .value
-    } catch {
-      print(error)
-    }
-  }
-  
   private func addToCart(product: Product) async {
-    if let index = cartItems.firstIndex(where: { $0.product.id == product.id }) {
-      cartItems[index].count += 1
-      print("Updated existing item: \(cartItems[index])")
+    if let index = store.cartItems.firstIndex(where: { $0.product.id == product.id }) {
+      store.cartItems[index].count += 1
+      print("Updated existing item: \(store.cartItems[index])")
     } else {
       let newItem = CartItem(product: product, count: 1)
-      cartItems.append(newItem)
+      store.cartItems.append(newItem)
       print("Added new item: \(newItem)")
     }
-    print("Current Cart Items: \(cartItems)")
+    print("Current Cart Items: \(store.cartItems)")
   }
   
   var body: some View {
-    NavigationView {
+    NavigationStack {
       VStack {
         ScrollView {
           LazyVGrid(columns: fixedColumn) {
-            ForEach(products, id: \.id) { product in
+            ForEach(store.products, id: \.id) { product in
               VStack {
                 Text(product.name)
                   .foregroundColor(.white)
@@ -78,11 +62,10 @@ struct MenuScreen: View {
           }
           .padding(.bottom)
         }
-        Spacer()
         Button(action: {
           showSheetView.toggle()
         }) {
-          Text(cartItems.isEmpty ? "Add to Cart" : "\(totalItemCount) items - RM \(totalPrice, specifier: "%.2f")")
+          Text(store.cartItems.isEmpty ? "Add to Cart" : "\(totalItemCount) items - RM \(store.totalPrice, specifier: "%.2f")")
         }
         .applyButtonStyle(isDisabled: false)
       }
@@ -90,17 +73,21 @@ struct MenuScreen: View {
       .navigationTitle("Nickies POS")
       .onAppear {
         Task {
-          await fetchProducts()
+          do {
+            try await store.fetchProducts()
+          } catch {
+            print(error)
+          }
         }
       }
     }
     .sheet(isPresented: $showSheetView) {
-      CartItemScreen(cartItems: $cartItems)
+      CartItemScreen()
     }
   }
 }
 
 #Preview {
   MenuScreen()
-    .environment(\.supabaseClient, .development)
+    .environment(CartStore(supabaseClient: .development))
 }

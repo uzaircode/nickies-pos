@@ -14,6 +14,7 @@ struct nickies_posApp: App {
           MainTabView()
             .environment(CustomerStore(supabaseClient: .development))
             .environment(OrderStore(supabaseClient: .development))
+            .environment(CartStore(supabaseClient: .development))
         }
     }
 }
